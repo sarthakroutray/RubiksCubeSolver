@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PocketCube — State Space Search Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- GhostFibers Interactive Background Canvas -->
+    <div id="ghost-fibers-bg" class="ghost-fibers-bg"></div>
+
+    <div id="app">
+      <!-- ═══════════════ TOPBAR ═══════════════ -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="logo-mark" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+              <line x1="12" y1="22.08" x2="12" y2="12"/>
+              <line x1="7.5" y1="4.5" x2="16.5" y2="9.5"/>
+              <line x1="7.5" y1="14.5" x2="7.5" y2="19.5"/>
+              <line x1="16.5" y1="14.5" x2="16.5" y2="19.5"/>
+            </svg>
+          </div>
+          <div class="topbar-title-group">
+            <div class="title-row">
+              <h1>PocketCube</h1>
+              <span class="engine-tag">Search Lab</span>
+            </div>
+            <span class="subtitle">2×2×2 Heuristic State Space Visualizer</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="engine-spec-pill">
+            <span class="pulse-indicator" id="engine-pulse"></span>
+            <span id="engine-state">Engine Ready</span>
+          </div>
+
+          <div class="header-actions">
+            <button class="btn-subtle" id="reset-cube-btn" title="Reset cube to solved state (Shortcut: R)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+              <span>Reset Cube</span>
+            </button>
+            <button class="btn-subtle" id="open-shortcuts-btn" title="View keyboard shortcuts (Shortcut: ?)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M8 12h.001M12 12h.001M16 12h.001M7 16h10"/>
+              </svg>
+              <span>Shortcuts</span>
+              <kbd>?</kbd>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- ═══════════════ MAIN WORKSPACE ═══════════════ -->
+      <main class="layout">
+        <!-- ═══════════════ LEFT STUDIO COLUMN ═══════════════ -->
+        <section class="left-pane">
+          <!-- 3D Interactive Viewport -->
+          <div id="cube-viewport" class="cube-viewport">
+            <div class="viewport-hud">
+              <div class="hud-group">
+                <button class="hud-btn active" data-view="iso" title="Isometric 3D View">Iso</button>
+                <button class="hud-btn" data-view="front" title="Front Face View">Front</button>
+                <button class="hud-btn" data-view="top" title="Top Face View">Top</button>
+                <button class="hud-btn" data-view="right" title="Right Face View">Right</button>
+              </div>
+              <button class="hud-btn hud-icon-btn" id="hud-reset-cam" title="Reset Camera Position">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="cube-viewport-overlay">
+              <span class="viewport-hint">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <ellipse cx="12" cy="12" rx="10" ry="6"/>
+                  <path d="M12 2v20"/>
+                </svg>
+                Drag to rotate · Scroll to zoom
+              </span>
+            </div>
+          </div>
+
+          <!-- Manual Operations Keyboard -->
+          <div class="move-buttons-panel">
+            <div class="panel-header">
+              <div class="panel-header-title">
+                <span class="panel-label">Face Operations</span>
+                <span class="panel-hint">Quarter &amp; Half Turns</span>
+              </div>
+              <span class="panel-keyhint">Keys: U, R, F (Shift for counter-clockwise)</span>
+            </div>
+            <div class="manual-moves-grid" id="manual-moves"></div>
+          </div>
+
+          <!-- Move Sequence Tape -->
+          <div class="move-tape-panel">
+            <div class="tape-header">
+              <div class="tape-header-left">
+                <span class="tape-label">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="8" y1="6" x2="21" y2="6"/>
+                    <line x1="8" y1="12" x2="21" y2="12"/>
+                    <line x1="8" y1="18" x2="21" y2="18"/>
+                    <line x1="3" y1="6" x2="3.01" y2="6"/>
+                    <line x1="3" y1="12" x2="3.01" y2="12"/>
+                    <line x1="3" y1="18" x2="3.01" y2="18"/>
+                  </svg>
+                  Move Tape
+                </span>
+                <span class="tape-counter" id="tape-counter">0 moves</span>
+              </div>
+              <div class="tape-header-right">
+                <button class="btn-xs" id="copy-tape-btn" title="Copy moves sequence">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                  <span>Copy</span>
+                </button>
+                <span class="status-pill" id="status">Ready</span>
+              </div>
+            </div>
+            <div class="move-tape" id="move-tape">
+              <span class="tape-placeholder">No moves recorded — scramble or apply manual turns</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════════ RIGHT WORKBENCH COLUMN ═══════════════ -->
+        <section class="right-pane">
+          <!-- Algorithm & Search Configuration -->
+          <div class="config-panel">
+            <div class="config-grid">
+              <div class="control-group">
+                <label for="algorithm">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                    <polyline points="2 17 12 22 22 17"/>
+                    <polyline points="2 12 12 17 22 12"/>
+                  </svg>
+                  <span>Search Algorithm</span>
+                </label>
+                <div class="select-wrap">
+                  <select id="algorithm">
+                    <option value="astar">A* Search (Optimal f = g + h)</option>
+                    <option value="ida">IDA* Search (Iterative Deepening)</option>
+                    <option value="greedy">Greedy Best-First (Greedy on h)</option>
+                  </select>
+                  <span class="select-arrow">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                  </span>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label for="heuristic">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+                  </svg>
+                  <span>Heuristic Function</span>
+                </label>
+                <div class="select-wrap">
+                  <select id="heuristic">
+                    <option value="h2">3D Manhattan Corner Distance (h₂ · Admissible)</option>
+                    <option value="h1">Misplaced Stickers ÷ 12 (h₁ · Fast)</option>
+                    <option value="h0">Zero Heuristic — Breadth-First Search (h=0)</option>
+                  </select>
+                  <span class="select-arrow">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                  </span>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label for="mode">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3"/>
+                  </svg>
+                  <span>Execution Mode</span>
+                </label>
+                <div class="select-wrap">
+                  <select id="mode">
+                    <option value="instant" selected>Instant Solve + Animated Playback</option>
+                    <option value="live">Live Search Visualizer (Step-by-Step)</option>
+                  </select>
+                  <span class="select-arrow">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                  </span>
+                </div>
+              </div>
+
+              <div class="control-group speed-group">
+                <div class="speed-label-row">
+                  <label for="speed">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 14l4-4"/>
+                      <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
+                    </svg>
+                    <span>Playback Speed</span>
+                  </label>
+                  <div class="speed-presets">
+                    <button type="button" class="speed-preset-btn" data-speed="0.5">0.5×</button>
+                    <button type="button" class="speed-preset-btn active" data-speed="1">1×</button>
+                    <button type="button" class="speed-preset-btn" data-speed="2.5">2.5×</button>
+                    <button type="button" class="speed-preset-btn" data-speed="5">5×</button>
+                    <span class="speed-badge" id="speed-label">1.0×</span>
+                  </div>
+                </div>
+                <div class="speed-slider-wrap">
+                  <input id="speed" type="range" min="0.25" max="10" step="0.25" value="1" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action & Sequence Input Bar -->
+          <div class="action-bar">
+            <div class="scramble-group">
+              <span class="group-tag">Scramble:</span>
+              <button class="btn btn-secondary" data-scramble="4" title="Quick 4-turn scramble">
+                <span>4 Moves</span>
+              </button>
+              <button class="btn btn-secondary" data-scramble="7" title="Standard 7-turn scramble">
+                <span>7 Moves</span>
+              </button>
+              <button class="btn btn-secondary" data-scramble="10" title="Deep 10-turn scramble">
+                <span>10 Moves</span>
+              </button>
+            </div>
+
+            <div class="custom-input-group">
+              <input
+                id="custom-moves"
+                type="text"
+                placeholder="Notation e.g. U R2 F' U'"
+                autocomplete="off"
+                spellcheck="false"
+              />
+              <button class="btn btn-outline" id="apply-custom">Apply</button>
+            </div>
+
+            <div class="action-group-right">
+              <button class="btn btn-primary" id="solve" title="Run search algorithm (Shortcut: Space)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+                <span>Solve</span>
+              </button>
+              <button class="btn btn-danger" id="stop" title="Stop current execution (Shortcut: Esc)">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="4" y="4" width="16" height="16" rx="2"/>
+                </svg>
+                <span>Stop</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Telemetry & Search Metrics Dashboard -->
+          <div class="metrics" id="metrics"></div>
+
+          <!-- Live State Space Search Tree -->
+          <div class="tree-panel">
+            <div class="tree-header">
+              <div class="tree-title">
+                <span class="tree-title-dot" id="tree-pulse"></span>
+                <span>State Space Expansion Tree</span>
+              </div>
+              <div class="legend">
+                <span class="legend-item"><i class="dot dot-closed"></i>Closed</span>
+                <span class="legend-item"><i class="dot dot-current"></i>Exploring</span>
+                <span class="legend-item"><i class="dot dot-open"></i>Frontier</span>
+                <span class="legend-item"><i class="dot dot-solution"></i>Solution</span>
+              </div>
+            </div>
+            <canvas id="tree-canvas"></canvas>
+          </div>
+        </section>
+      </main>
+
+      <!-- ═══════════════ KEYBOARD SHORTCUTS MODAL ═══════════════ -->
+      <div class="modal-backdrop" id="shortcuts-modal" aria-hidden="true">
+        <div class="modal-card">
+          <div class="modal-header">
+            <div class="modal-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M8 12h.001M12 12h.001M16 12h.001M7 16h10"/>
+              </svg>
+              <span>Keyboard Shortcuts</span>
+            </div>
+            <button class="modal-close-btn" id="close-shortcuts-btn" title="Close (Esc)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="shortcut-list">
+              <div class="shortcut-row">
+                <span class="shortcut-desc">Solve / Start Search</span>
+                <div class="shortcut-keys"><kbd>Space</kbd></div>
+              </div>
+              <div class="shortcut-row">
+                <span class="shortcut-desc">Stop Search Execution</span>
+                <div class="shortcut-keys"><kbd>Esc</kbd></div>
+              </div>
+              <div class="shortcut-row">
+                <span class="shortcut-desc">Quick Scramble (7 moves)</span>
+                <div class="shortcut-keys"><kbd>S</kbd></div>
+              </div>
+              <div class="shortcut-row">
+                <span class="shortcut-desc">Reset Cube to Solved</span>
+                <div class="shortcut-keys"><kbd>R</kbd></div>
+              </div>
+              <div class="shortcut-row">
+                <span class="shortcut-desc">Up Face Turns</span>
+                <div class="shortcut-keys"><kbd>U</kbd> <span class="key-or">/</span> <kbd>Shift</kbd>+<kbd>U</kbd></div>
+              </div>
+              <div class="shortcut-row">
+                <span class="shortcut-desc">Right Face Turns</span>
+                <div class="shortcut-keys"><kbd>Alt</kbd>+<kbd>R</kbd></div>
+              </div>
+              <div class="shortcut-row">
+                <span class="shortcut-desc">Front Face Turns</span>
+                <div class="shortcut-keys"><kbd>F</kbd> <span class="key-or">/</span> <kbd>Shift</kbd>+<kbd>F</kbd></div>
+              </div>
+              <div class="shortcut-row">
+                <span class="shortcut-desc">Show / Hide Shortcuts</span>
+                <div class="shortcut-keys"><kbd>?</kbd></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
