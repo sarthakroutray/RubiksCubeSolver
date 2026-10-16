@@ -429,6 +429,8 @@ kbd {
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: 10px 14px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   box-shadow: var(--shadow-sm), var(--highlight-top);
 }
 
@@ -541,6 +543,8 @@ kbd {
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: 9px 14px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   box-shadow: var(--shadow-sm), var(--highlight-top);
   flex-shrink: 0;
 }
@@ -716,6 +720,8 @@ kbd {
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: 12px 14px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   box-shadow: var(--shadow-sm), var(--highlight-top);
   flex-shrink: 0;
 }
@@ -890,6 +896,8 @@ input[type='range']::-moz-range-thumb {
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: 9px 12px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   box-shadow: var(--shadow-sm), var(--highlight-top);
   flex-shrink: 0;
 }
@@ -1037,6 +1045,8 @@ input[type='range']::-moz-range-thumb {
   display: flex;
   flex-direction: column;
   gap: 3px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   box-shadow: var(--shadow-sm), var(--highlight-top);
   transition: border-color 0.15s, transform 0.15s;
   cursor: help;
@@ -1108,6 +1118,8 @@ input[type='range']::-moz-range-thumb {
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   overflow: hidden;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   box-shadow: var(--shadow-sm), var(--highlight-top);
 }
 

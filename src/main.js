@@ -1,4 +1,7 @@
 import './styles/main.css';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import GhostFibers from './components/GhostFibers/GhostFibers.jsx';
 import { CubeScene } from './three/CubeScene.js';
 import { SearchTreeCanvas } from './visualizer/SearchTreeCanvas.js';
 import { MetricsDashboard, computeBranchingFactor } from './visualizer/MetricsDashboard.js';
@@ -522,3 +525,30 @@ window.addEventListener('resize', () => tree.resize());
 /* ─── Initialization ─────────────────────────────────────────── */
 updateSpeedUI();
 setStatus('Engine ready.');
+
+/* ─── Mount GhostFibers Background ──────────────────────────── */
+const bgContainer = document.getElementById('ghost-fibers-bg');
+if (bgContainer) {
+  const root = createRoot(bgContainer);
+  root.render(
+    React.createElement(GhostFibers, {
+      glowColor: '#3b82f6',
+      secondaryColor: '#8b5cf6',
+      lineColor: '#93c5fd',
+      layers: 3,
+      twist: 1.2,
+      threads: 72,
+      fiberStyle: 'dots',
+      depthOfField: 0.85,
+      hoverEffect: 'focus',
+      intro: true,
+      mouseInteraction: true,
+      brightness: 0.75,
+      speed: 0.4,
+      vignette: 0.35,
+      scale: 1.1,
+      particles: 0.45,
+      sparkle: 0.5,
+    })
+  );
+}
