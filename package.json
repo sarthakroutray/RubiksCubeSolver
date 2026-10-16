@@ -1,20 +1,21 @@
 {
   "name": "pocket-cube-search-viz",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test:cube": "node test-cube.js",
+    "test:solver": "node test-solver.js",
+    "test:three": "node test-three.js",
+    "test": "npm run test:cube && npm run test:solver && npm run test:three"
   },
   "dependencies": {
+    "next": "^16.4.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "three": "^0.180.0"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^5.2.0",
-    "vite": "^7.0.0"
   }
 }

@@ -90,17 +90,26 @@ export function movesEqual(a, b) {
   return a.length === b.length && a.every((move, i) => move === b[i]);
 }
 
-export function scramble(depth = 7) {
-  const scrambleMoves = [];
-  let lastFace = null;
-  for (let i = 0; i < depth; i++) {
+/**
+ * Generates `count` random moves, never turning the same face twice in a row
+ * (a redundant pair like `U U'`). `avoidFace` seeds the "previous face" so a
+ * continuation never repeats the last face of an existing sequence.
+ */
+export function randomMoves(count, avoidFace = null) {
+  const moves = [];
+  let lastFace = avoidFace;
+  for (let i = 0; i < count; i++) {
     const candidates = MOVE_FACES.filter((face) => face !== lastFace);
     const face = candidates[Math.floor(Math.random() * candidates.length)];
     const suffixes = ['', "'", '2'];
-    const move = face + suffixes[Math.floor(Math.random() * suffixes.length)];
-    scrambleMoves.push(move);
+    moves.push(face + suffixes[Math.floor(Math.random() * suffixes.length)]);
     lastFace = face;
   }
+  return moves;
+}
+
+export function scramble(depth = 7) {
+  const scrambleMoves = randomMoves(depth);
   return { state: applyMoves(solvedState(), scrambleMoves), scrambleMoves };
 }
 
