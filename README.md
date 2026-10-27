@@ -1,6 +1,6 @@
 # 3D Pocket Cube (2×2) Heuristic Search Visualizer
 
-An interactive, high-performance 3D visualizer and academic benchmarking suite for the $2 \times 2$ Pocket Cube (Rubik's Mini Cube). Built with **Next.js 16**, **React 19**, and **Three.js**, this application visually breaks down informed heuristic search algorithms (**A\***, **IDA\***, and **Greedy Best-First Search**) in real time, rendering both the physical 3D cube rotations and the underlying state-space search tree on an HTML5 canvas.
+An interactive, high-performance 3D visualizer and academic benchmarking suite for the 2×2 Pocket Cube (Rubik's Mini Cube). Built with **Next.js 16**, **React 19**, and **Three.js**, this application visually breaks down informed heuristic search algorithms (**A\***, **IDA\***, and **Greedy Best-First Search**) in real time, rendering both the physical 3D cube rotations and the underlying state-space search tree on an HTML5 canvas.
 
 ---
 
@@ -17,10 +17,10 @@ An interactive, high-performance 3D visualizer and academic benchmarking suite f
    - [Breadth-First Search (BFS / Uninformed Search)](#breadth-first-search-bfs--uninformed-search)
    - [Algorithm Comparison Matrix](#algorithm-comparison-matrix)
 3. [Heuristic Functions & Admissibility](#3-heuristic-functions--admissibility)
-   - [3D Manhattan Corner Distance ($h_2$)](#3d-manhattan-corner-distance-h_2)
-   - [Misplaced Sticker Heuristic ($h_1$)](#misplaced-sticker-heuristic-h_1)
-   - [Corner Position/Twist Heuristic ($h_{\text{cubie}}$)](#corner-positiontwist-heuristic-h_textcubie)
-   - [Zero Heuristic ($h_0$)](#zero-heuristic-h_0)
+   - [3D Manhattan Corner Distance (h2)](#3d-manhattan-corner-distance-h2)
+   - [Misplaced Sticker Heuristic (h1)](#misplaced-sticker-heuristic-h1)
+   - [Corner Position/Twist Heuristic (h_cubie)](#corner-positiontwist-heuristic-h_cubie)
+   - [Zero Heuristic (h0)](#zero-heuristic-h0)
 4. [Software Architecture & Systems Design](#4-software-architecture--systems-design)
    - [Generator-Based Search Telemetry](#generator-based-search-telemetry)
    - [Telemetry Frame Data Contract](#telemetry-frame-data-contract)
@@ -38,30 +38,34 @@ An interactive, high-performance 3D visualizer and academic benchmarking suite f
 
 ## 1. Overview & Mathematical Formulation
 
-The $2 \times 2 \times 2$ Rubik's Cube (Pocket Cube) consists of 8 corner cubies, with no edge or fixed center pieces. Each cubie exposes 3 colored stickers, yielding $8 \times 3 = 24$ total visible sticker facets.
+The 2×2×2 Rubik's Cube (Pocket Cube) consists of 8 corner cubies, with no edge or fixed center pieces. Each cubie exposes 3 colored stickers, yielding `8 × 3 = 24` total visible sticker facets.
 
 ### State-Space Complexity
 
-* **Raw Permutations:** 8 corner positions can be permuted in $8! = 40,320$ ways.
-* **Orientations:** Each corner has 3 possible angular orientations ($0^\circ, 120^\circ, 240^\circ$). The orientation of the final piece is determined by the other 7, giving $3^7 = 2,187$ orientations.
+* **Raw Permutations:** 8 corner positions can be permuted in `8! = 40,320` ways.
+* **Orientations:** Each corner has 3 possible angular orientations (0°, 120°, 240°). The orientation of the final piece is uniquely determined by the other 7, giving `3^7 = 2,187` orientations.
 * **Total Distinct Physical States:**
-  $$\frac{8! \times 3^7}{24} = 7! \times 3^6 = 3,674,160 \text{ states}$$
+  ```text
+  (8! × 3^7) / 24 = 7! × 3^6 = 3,674,160 reachable states
+  ```
 * **God's Number:**
-  * **Half-Turn Metric (HTM):** 11 moves maximum for any solvable state.
+  * **Half-Turn Metric (HTM):** 11 moves maximum for any solvable configuration.
   * **Quarter-Turn Metric (QTM):** 14 moves maximum.
 
 ### Symmetry Reduction (The Fixed DBL Corner)
 
-In an unconstrained $2 \times 2$ cube, applying whole-cube rotations (rotational symmetries of the cube group $O_h$, order 24) generates duplicate states that represent identical physical configurations under different viewing angles.
+In an unconstrained 2×2 cube, applying whole-cube rotations (rotational symmetries of the cube group `O_h`, order 24) generates duplicate states that represent identical physical configurations under different viewing angles.
 
 To eliminate this redundancy without requiring quotient-space graph hashing:
 * The **Down-Back-Left (DBL)** corner piece (Index 7) is locked in place.
 * Moves are strictly restricted to the 3 faces opposite and adjacent to DBL:
-  $$\text{Action Space } \mathcal{A} = \{ \text{U}, \text{U}', \text{U2}, \text{R}, \text{R}', \text{R2}, \text{F}, \text{F}', \text{F2} \}$$
+  ```text
+  Action Space A = { U, U', U2, R, R', R2, F, F', F2 }
+  ```
 * Restricting the turning faces to **Up (U)**, **Right (R)**, and **Front (F)** guarantees that the DBL corner never moves.
 * This fixes spatial orientation, prunes the branching factor from 18 to 9 (or 6 non-repeating), and ensures every state has a unique canonical representation.
 
-```
+```text
                   ┌───────┬───────┐
                   │ 0 (U) │ 1 (U) │
                   ├───────┼───────┤
@@ -106,7 +110,7 @@ Transitions are computed via precomputed cyclic permutations:
 - **`R` (CW quarter turn):** `[[4, 5, 7, 6], [3, 20, 15, 11], [9, 1, 22, 13]]`
 - **`F` (CW quarter turn):** `[[8, 9, 11, 10], [2, 4, 13, 19], [3, 6, 12, 17]]`
 
-Double turns (`U2`, `R2`, `F2`) compose the permutation twice; inverse turns (`U'`, `R'`, `F'`) compose it three times. Transition application takes $O(24)$ operations using typed arrays with zero heap allocation.
+Double turns (`U2`, `R2`, `F2`) compose the permutation twice; inverse turns (`U'`, `R'`, `F'`) compose it three times. Transition application takes `O(24)` operations using typed arrays with zero heap allocation.
 
 ---
 
@@ -118,17 +122,17 @@ The engine implements four search strategies defined in `src/solver/SearchEngine
 flowchart TD
     Start([Scrambled State]) --> ChooseAlg{Select Algorithm}
     
-    ChooseAlg -->|A* Search| AStar[f = g + h<br/>Min-Heap Priority Queue<br/>Closed Set + gScore Map]
-    ChooseAlg -->|IDA* Search| IDAStar[f-bound Depth-First Cutoff<br/>Memory: O(bd)<br/>Iteratively Increase Threshold]
-    ChooseAlg -->|Greedy Best-First| Greedy[f = h<br/>Pure Heuristic Priority<br/>Rapid Exploration, Non-Optimal]
-    ChooseAlg -->|Uninformed BFS| BFS[f = g + 0<br/>FIFO / Zero Heuristic<br/>Exhaustive Layer-by-Layer]
+    ChooseAlg -->|A* Search| AStar["f = g + h<br/>Min-Heap Priority Queue<br/>Closed Set + gScore Map"]
+    ChooseAlg -->|IDA* Search| IDAStar["f-bound Depth-First Cutoff<br/>Memory: O(bd)<br/>Iteratively Increase Threshold"]
+    ChooseAlg -->|Greedy Best-First| Greedy["f = h<br/>Pure Heuristic Priority<br/>Rapid Exploration, Non-Optimal"]
+    ChooseAlg -->|Uninformed BFS| BFS["f = g + 0<br/>FIFO / Zero Heuristic<br/>Exhaustive Layer-by-Layer"]
 
     AStar --> GoalCheck{isSolved?}
     IDAStar --> GoalCheck
     Greedy --> GoalCheck
     BFS --> GoalCheck
 
-    GoalCheck -->|No| Expand[Apply Valid Moves: U, R, F<br/>Emit Telemetry Frame]
+    GoalCheck -->|No| Expand["Apply Valid Moves: U, R, F<br/>Emit Telemetry Frame"]
     Expand --> ChooseAlg
     GoalCheck -->|Yes| Solved([Optimal / Solution Path Emitted])
 ```
@@ -136,31 +140,35 @@ flowchart TD
 ### A* Search
 
 * **Evaluation Function:**
-  $$f(n) = g(n) + h(n)$$
-  where $g(n)$ is the exact cost from root to current node (number of turns) and $h(n)$ is an admissible heuristic estimate to the solved state.
+  ```text
+  f(n) = g(n) + h(n)
+  ```
+  where `g(n)` is the exact cost from root to current node (number of turns) and `h(n)` is an admissible heuristic estimate to the solved state.
 * **Data Structures:**
-  * **Open Set:** Custom binary `MinHeap` ordered by $f(n)$ ascending, tie-broken by higher $g(n)$ (deeper search prioritized) and lower $h(n)$.
+  * **Open Set:** Custom binary `MinHeap` ordered by `f(n)` ascending, tie-broken by higher `g(n)` (deeper search prioritized) and lower `h(n)`.
   * **Closed Set:** `Set<string>` of visited state hashes (`state.join(',')`).
   * **Path Map (`gScore`):** `Map<string, number>` tracking the shortest path to each visited configuration.
-* **Optimality:** When paired with an admissible heuristic ($h_2$ or $h_1$), A* guarantees an **optimal (shortest path)** solution sequence.
+* **Optimality:** When paired with an admissible heuristic (`h2` or `h1`), A* guarantees an **optimal (shortest path)** solution sequence.
 
 ### IDA* (Iterative Deepening A*)
 
 * **Mechanism:**
-  Combines the linear memory efficiency of depth-first search ($O(b \cdot d)$) with the optimality guarantees of A*.
+  Combines the linear memory efficiency of depth-first search (`O(b · d)`) with the optimality guarantees of A*.
 * **Algorithm Flow:**
-  1. Initialize cutoff threshold $T = h(\text{start})$.
+  1. Initialize cutoff threshold `T = h(start)`.
   2. Perform depth-first traversal using an explicit search stack.
-  3. Prune any branch where $f(n) = g(n) + h(n) > T$, recording the minimum exceeded $f$-value ($\min f_{\text{exceeded}}$).
+  3. Prune any branch where `f(n) = g(n) + h(n) > T`, recording the minimum exceeded f-value (`min f_exceeded`).
   4. Cycle detection along the active search path prevents loops (`isOnCurrentPath(node, id)`).
-  5. If goal is not found, update threshold $T \leftarrow \min f_{\text{exceeded}}$ and repeat.
-* **Memory Complexity:** $O(d)$ where $d$ is the solution depth, eliminating the $O(b^d)$ heap footprint of standard A*.
+  5. If goal is not found, update threshold `T <- min f_exceeded` and repeat.
+* **Memory Complexity:** `O(d)` where `d` is the solution depth, eliminating the `O(b^d)` heap footprint of standard A*.
 
 ### Greedy Best-First Search
 
 * **Evaluation Function:**
-  $$f(n) = h(n)$$
-  Ignores accumulated step cost $g(n)$ entirely.
+  ```text
+  f(n) = h(n)
+  ```
+  Ignores accumulated step cost `g(n)` entirely.
 * **Characteristics:**
   * Prioritizes nodes estimated to be closest to the goal.
   * Expands significantly fewer nodes in simple scrambles, but **sacrifices optimality**.
@@ -170,26 +178,31 @@ flowchart TD
 ### Breadth-First Search (BFS / Uninformed Search)
 
 * **Evaluation Function:**
-  $$f(n) = g(n) + 0$$
-* Implemented by selecting $h_0$ (Zero Heuristic).
+  ```text
+  f(n) = g(n) + 0
+  ```
+* Implemented by selecting `h0` (Zero Heuristic).
 * Uniformly expands nodes strictly in order of depth.
-* Explores the full branching tree layer-by-layer, demonstrating exponential node explosion ($b \approx 9$) without heuristic guidance.
+* Explores the full branching tree layer-by-layer, demonstrating exponential node explosion (`b ≈ 9`) without heuristic guidance.
 
 ### Algorithm Comparison Matrix
 
-| Algorithm | Evaluation $f(n)$ | Space Complexity | Time Complexity | Guarantees Optimality? | Typical Use Case |
+| Algorithm | Evaluation `f(n)` | Space Complexity | Time Complexity | Guarantees Optimality? | Typical Use Case |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| **A\*** | $g(n) + h(n)$ | $O(b^d)$ | $O(b^d)$ | **Yes** (with $h$ admissible) | Benchmark optimal path; moderate depths |
-| **IDA\*** | $g(n) + h(n)$ bound | $O(d)$ | $O(b^d)$ | **Yes** (with $h$ admissible) | Memory-constrained optimal search |
-| **Greedy Best-FS** | $h(n)$ | $O(b^d)$ | $O(b^m)$ | **No** | Fast heuristic exploration; soft computing |
-| **BFS ($h_0$)** | $g(n)$ | $O(b^d)$ | $O(b^d)$ | **Yes** | Baseline uninformed comparison |
+| **A\*** | `g(n) + h(n)` | `O(b^d)` | `O(b^d)` | **Yes** (with `h` admissible) | Benchmark optimal path; moderate depths |
+| **IDA\*** | `g(n) + h(n)` bound | `O(d)` | `O(b^d)` | **Yes** (with `h` admissible) | Memory-constrained optimal search |
+| **Greedy Best-FS** | `h(n)` | `O(b^d)` | `O(b^m)` | **No** | Fast heuristic exploration; soft computing |
+| **BFS (h0)** | `g(n)` | `O(b^d)` | `O(b^d)` | **Yes** | Baseline uninformed comparison |
 
 ---
 
 ## 3. Heuristic Functions & Admissibility
 
-A heuristic $h(n)$ is **admissible** if it never overestimates the true cost $h^*(n)$ to reach the goal:
-$$0 \le h(n) \le h^*(n), \quad \forall n$$
+A heuristic `h(n)` is **admissible** if it never overestimates the true cost `h*(n)` to reach the goal:
+
+```text
+0 <= h(n) <= h*(n)  for all states n
+```
 
 The engine defines three selectable heuristics in `src/solver/heuristics.js`:
 
@@ -197,45 +210,59 @@ The engine defines three selectable heuristics in `src/solver/heuristics.js`:
 flowchart LR
     State([Cube State]) --> EvalH{Heuristic Function}
     
-    EvalH -->|h2: 3D Manhattan| M[Compute 3D coordinates of 7 corners<br/>Distance: mismatches along X, Y, Z<br/>Divide sum by 4]
-    EvalH -->|h1: Misplaced Stickers| S[Count stickers out of slot<br/>Divide count by 12]
-    EvalH -->|h0: Zero Heuristic| Z[Return 0<br/>Converts A* to BFS]
+    EvalH -->|h2: 3D Manhattan| M["Compute 3D coordinates of 7 corners<br/>Distance: mismatches along X, Y, Z<br/>Divide sum by 4"]
+    EvalH -->|h1: Misplaced Stickers| S["Count stickers out of slot<br/>Divide count by 12"]
+    EvalH -->|h0: Zero Heuristic| Z["Return 0<br/>Converts A* to BFS"]
 
-    M --> H2Val["h2(n) ≤ h*(n) [Strongest Admissible]"]
-    S --> H1Val["h1(n) ≤ h*(n) [Admissible]"]
+    M --> H2Val["h2(n) <= h*(n) [Strongest Admissible]"]
+    S --> H1Val["h1(n) <= h*(n) [Admissible]"]
     Z --> H0Val["h0(n) = 0 [Uninformed]"]
 ```
 
-### 3D Manhattan Corner Distance ($h_2$)
+### 3D Manhattan Corner Distance (h2)
 
 This is the primary and most informed admissible heuristic in the suite.
 
-1. Each corner's unique color triplet maps to its solved home position index $p \in \{0, \dots, 7\}$.
-2. The current coordinates $\mathbf{c}_{\text{current}} \in \{-1, +1\}^3$ and home coordinates $\mathbf{c}_{\text{home}} \in \{-1, +1\}^3$ are compared across the three Cartesian axes.
-3. The number of axis mismatches ($0, 1, 2,$ or $3$) determines the minimum quarter turns required to reposition that corner in isolation:
-   $$\text{cost}(p) = \begin{cases} 0 & \text{if } \text{mismatches} = 0 \\ 1 & \text{if } \text{mismatches} \in \{1, 2\} \\ 2 & \text{if } \text{mismatches} = 3 \end{cases}$$
+1. Each corner's unique color triplet maps to its solved home position index `p ∈ {0, ..., 7}`.
+2. The current coordinates `c_current ∈ {-1, +1}³` and home coordinates `c_home ∈ {-1, +1}³` are compared across the three Cartesian axes.
+3. The number of axis mismatches (0, 1, 2, or 3) determines the minimum quarter turns required to reposition that corner in isolation:
+   ```text
+   cost(p) = 0   if mismatches == 0
+   cost(p) = 1   if mismatches in {1, 2}
+   cost(p) = 2   if mismatches == 3
+   ```
 4. Because any single quarter or half turn moves at most **4 corners** simultaneously, dividing the sum of individual distances by 4 yields an admissible lower bound:
-   $$h_2(n) = \frac{1}{4} \sum_{p=0}^{6} \text{cost}(p)$$
-5. **Admissibility Proof:** A single turn can reduce the total corner distance sum by at most 4. Therefore, $h_2(n) \le h^*(n)$ for all states.
+   ```text
+   h2(n) = (1 / 4) * sum_{p=0..6} cost(p)
+   ```
+5. **Admissibility Proof:** A single turn can reduce the total corner distance sum by at most 4. Therefore, `h2(n) <= h*(n)` for all states.
 
-### Misplaced Sticker Heuristic ($h_1$)
+### Misplaced Sticker Heuristic (h1)
 
 1. Counts the number of stickers out of 24 that do not match their target face color:
-   $$\text{misplaced}(n) = \sum_{i=0}^{23} \mathbb{I}[state[i] \neq \text{targetFace}[i]]$$
-2. A single face turn rotates 4 stickers on the face and permutes $2 \times 4 = 8$ side stickers, affecting at most **12 stickers** total.
+   ```text
+   misplaced(n) = sum_{i=0..23} (state[i] != targetFace[i] ? 1 : 0)
+   ```
+2. A single face turn rotates 4 stickers on the face and permutes `2 × 4 = 8` side stickers, affecting at most **12 stickers** total.
 3. Dividing by 12 gives an admissible bound:
-   $$h_1(n) = \frac{\text{misplaced}(n)}{12}$$
-4. **Admissibility Proof:** Since no single move can fix more than 12 stickers, $h_1(n) \le h^*(n)$.
+   ```text
+   h1(n) = misplaced(n) / 12
+   ```
+4. **Admissibility Proof:** Since no single move can fix more than 12 stickers, `h1(n) <= h*(n)`.
 
-### Corner Position/Twist Heuristic ($h_{\text{cubie}}$)
+### Corner Position/Twist Heuristic (h_cubie)
 
 Counts how many of the 7 movable corners are either in the wrong position slot or correctly positioned but twisted, divided by 4:
-$$h_{\text{cubie}}(n) = \frac{\text{unsolvedCorners}(n)}{4}$$
+```text
+h_cubie(n) = unsolvedCorners(n) / 4
+```
 
-### Zero Heuristic ($h_0$)
+### Zero Heuristic (h0)
 
 Returns constant 0:
-$$h_0(n) = 0$$
+```text
+h0(n) = 0
+```
 Transforms A* into Dijkstra's Algorithm / Breadth-First Search.
 
 ---
@@ -244,7 +271,7 @@ Transforms A* into Dijkstra's Algorithm / Breadth-First Search.
 
 The application is structured into decoupled modules separating mathematical representation, solver execution, 3D WebGL rendering, 2D canvas visualization, and React UI state.
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────────────┐
 │                          Next.js 16 / React 19                         │
 │                                                                        │
@@ -326,18 +353,18 @@ interface TelemetryFrame {
 * **The Pivot-Group Rotation Mechanism (`MoveAnimator.js`):**
   To prevent gimbal lock and numerical floating-point drift over hundreds of face rotations:
   1. A temporary `pivot = new THREE.Group()` is spawned at world origin `(0, 0, 0)`.
-  2. The 4 cubies on the turning layer (e.g. $y > 0.1$ for `U`) are reparented into `pivot` using `pivot.attach(cubie)` (preserving world matrices).
+  2. The 4 cubies on the turning layer (e.g. `y > 0.1` for `U`) are reparented into `pivot` using `pivot.attach(cubie)` (preserving world matrices).
   3. The pivot's rotation is animated using cubic easing (`easeInOutCubic`).
   4. On completion, cubies are reparented back to the scene using `scene.attach(cubie)`.
-  5. Coordinates and rotation angles are snapped to the exact lattice grid $(\pm 0.52, \pm 0.52, \pm 0.52)$ and multiples of $\frac{\pi}{2}$.
+  5. Coordinates and rotation angles are snapped to the exact lattice grid `(±0.52, ±0.52, ±0.52)` and exact multiples of `π / 2`.
 
 ### HTML5 Canvas 2D Search Tree Visualizer
 
 Implemented in `src/visualizer/SearchTreeCanvas.js`:
 * High-DPI canvas rendering (`window.devicePixelRatio`).
-* Dynamic layered graph layout organizing nodes by depth $g(n)$ on the Y-axis and sibling order on the X-axis.
+* Dynamic layered graph layout organizing nodes by depth `g(n)` on the Y-axis and sibling order on the X-axis.
 * **Visual Semantics:**
-  - **Closed Set (Expanded):** Solid slate gray badge with move label and $f = g + h$.
+  - **Closed Set (Expanded):** Solid slate gray badge with move label and `f = g + h`.
   - **Open Set (Frontier):** Outlined pill badge.
   - **Current Node:** Pulsing signal-amber accent ring with glow.
   - **Solution Path:** Thick emerald-green connecting edges and highlighted badge nodes.
@@ -366,7 +393,7 @@ Implemented in `src/visualizer/SearchTreeCanvas.js`:
 
 ## 6. Repository Structure
 
-```
+```text
 RubiksCube/
 ├── package.json               # Project manifest, scripts, and dependencies
 ├── jsconfig.json              # Path aliases (@/* -> ./src/*)
@@ -445,7 +472,7 @@ RubiksCube/
    ```
 
 4. Open your browser and navigate to:
-   ```
+   ```text
    http://localhost:3000
    ```
 
@@ -478,13 +505,13 @@ npm run test:three    # Gate 3: Three.js math & mesh alignment
   - Corner sticker indices match face boundaries.
   - Every move permutation is a bijective mapping of size 24.
   - The fixed DBL corner never moves under any move sequence.
-  - Order-of-operation checks: $U^4 = I$, $(R\,U\,R'\,U')^6 = I$.
-  - Invertibility: $M \circ M^{-1} = I$.
+  - Order-of-operation checks: `U⁴ = I`, `(R U R' U')⁶ = I`.
+  - Invertibility: `M ∘ M⁻¹ = I`.
 * **Gate 2 (`test-solver.js`):**
   - Heuristics are 0 on solved state and non-negative elsewhere.
-  - Admissibility: $h_1(s) \le h^*(s)$ and $h_2(s) \le h^*(s)$ verified for all states within 3 moves.
+  - Admissibility: `h1(s) <= h*(s)` and `h2(s) <= h*(s)` verified for all states within 3 moves.
   - Optimal solution lengths verified for A* and IDA* on 6-move scrambles.
-  - Sub-500ms benchmark target met for A* with $h_2$.
+  - Sub-500ms benchmark target met for A* with `h2`.
   - Adherence to Telemetry Frame Contract 1.2 verified.
 * **Gate 3 (`test-three.js`):**
   - 3D cubies match `CubeState.js` upon initialization.
@@ -500,10 +527,10 @@ npm run test:three    # Gate 3: Three.js math & mesh alignment
 | Panel | Description |
 | :--- | :--- |
 | **Cube Stage (Left)** | Interactive 3D WebGL Pocket Cube. Drag with left mouse button to rotate camera; right-click to pan; scroll wheel to zoom. Preset view chips: **Iso**, **Front**, **Top**, **Right**. |
-| **Face Controls** | Quick manual buttons for CW ($90^\circ$), CCW ($-90^\circ$), and Half Turns ($180^\circ$) on **U**, **R**, and **F** faces. |
+| **Face Controls** | Quick manual buttons for CW (90°), CCW (-90°), and Half Turns (180°) on **U**, **R**, and **F** faces. |
 | **Run & Scramble** | Instant scramble buttons for **4**, **7**, or **10 moves**; **+5** / **+10** extension buttons; custom move input accepting standard Singmaster notation (e.g. `U R2 F' U'`). |
-| **Config Panel** | Choose Search Algorithm (**A\***, **IDA\***, **Greedy Best-First**), Heuristic (**$h_2$ Manhattan**, **$h_1$ Stickers**, **$h_0$ BFS**), Execution Mode (**Instant** vs. **Live Search**), and Speed Slider (**0.25× to 10×**). |
-| **Telemetry** | Live readouts: Expanded Nodes ($|\text{closed}|$), Frontier Nodes ($|\text{open}|$), Depth $g(n)$, Heuristic $h(n)$, Evaluation $f(n)$, and Effective Branching Factor ($b^* = N^{1/d}$). |
+| **Config Panel** | Choose Search Algorithm (**A\***, **IDA\***, **Greedy Best-First**), Heuristic (**h2 Manhattan**, **h1 Stickers**, **h0 BFS**), Execution Mode (**Instant** vs. **Live Search**), and Speed Slider (**0.25× to 10×**). |
+| **Telemetry** | Live readouts: Expanded Nodes (`|closed|`), Frontier Nodes (`|open|`), Depth `g(n)`, Heuristic `h(n)`, Evaluation `f(n)`, and Effective Branching Factor (`b* = N^(1/d)`). |
 | **Move Tape** | Interactive ribbon displaying the solution path. Clicking any move chip previews that intermediate step on the 3D cube. Copy button copies the notation to clipboard. |
 | **Search Tree Canvas** | 2D graph visualizing the expansion tree in real time. Click any node badge to inspect its exact cube configuration in 3D. |
 
