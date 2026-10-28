@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 260" width="100%" height="260">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0d14"/>
+      <stop offset="50%" stop-color="#0f1523"/>
+      <stop offset="100%" stop-color="#070a10"/>
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f3f4f6"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff5800"/>
+      <stop offset="50%" stop-color="#ffd500"/>
+      <stop offset="100%" stop-color="#009b48"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#0046ad" flood-opacity="0.35"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+    <filter id="cubeShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#000000" flood-opacity="0.7"/>
+    </filter>
+  </defs>
+
+  <style>
+    @keyframes floatCube {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-7px); }
+    }
+    .cube-float {
+      animation: floatCube 4s ease-in-out infinite;
+      transform-origin: 150px 130px;
+    }
+    .sticker {
+      stroke: #111827;
+      stroke-width: 2.2;
+      stroke-linejoin: round;
+      transition: filter 0.2s;
+    }
+  </style>
+
+  <!-- Background Card -->
+  <rect width="850" height="260" rx="16" fill="url(#bgGrad)" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Subtle Studio Grid Pattern -->
+  <g opacity="0.08" stroke="#ffffff" stroke-width="1">
+    <line x1="50" y1="0" x2="50" y2="260"/>
+    <line x1="100" y1="0" x2="100" y2="260"/>
+    <line x1="150" y1="0" x2="150" y2="260"/>
+    <line x1="200" y1="0" x2="200" y2="260"/>
+    <line x1="250" y1="0" x2="250" y2="260"/>
+    <line x1="300" y1="0" x2="300" y2="260"/>
+    <line x1="0" y1="50" x2="850" y2="50"/>
+    <line x1="0" y1="100" x2="850" y2="100"/>
+    <line x1="0" y1="150" x2="850" y2="150"/>
+    <line x1="0" y1="200" x2="850" y2="200"/>
+  </g>
+
+  <!-- Ambient Glow behind Cube -->
+  <ellipse cx="145" cy="180" rx="90" ry="24" fill="#000000" opacity="0.6"/>
+  <circle cx="145" cy="120" r="95" fill="#0046ad" opacity="0.12" filter="url(#glow)"/>
+
+  <!-- 3D Isometric 2x2 Pocket Cube Group -->
+  <g class="cube-float" filter="url(#cubeShadow)">
+    <!-- Base / Gaps Core Block -->
+    <!-- Top Face (White #FFFFFF) -->
+    <!-- Sticker Top-Back: 0 -->
+    <polygon class="sticker" points="145,46 179,64 145,82 111,64" fill="#FFFFFF"/>
+    <!-- Sticker Top-Right: 1 -->
+    <polygon class="sticker" points="181,65 215,83 181,101 147,83" fill="#FFFFFF"/>
+    <!-- Sticker Top-Left: 2 -->
+    <polygon class="sticker" points="109,65 143,83 109,101 75,83" fill="#FFFFFF"/>
+    <!-- Sticker Top-Front: 3 -->
+    <polygon class="sticker" points="145,84 179,102 145,120 111,102" fill="#FFFFFF"/>
+
+    <!-- Left Face (Green #009B48) -->
+    <!-- Sticker Left-Top-Back: 16 -->
+    <polygon class="sticker" points="73,85 107,103 107,143 73,125" fill="#009B48"/>
+    <!-- Sticker Left-Top-Front: 8 -->
+    <polygon class="sticker" points="109,104 143,122 143,162 109,144" fill="#009B48"/>
+    <!-- Sticker Left-Bottom-Back: 18 -->
+    <polygon class="sticker" points="73,127 107,145 107,185 73,167" fill="#009B48"/>
+    <!-- Sticker Left-Bottom-Front: 10 -->
+    <polygon class="sticker" points="109,146 143,164 143,204 109,186" fill="#009B48"/>
+
+    <!-- Right Face (Red #B71234) -->
+    <!-- Sticker Right-Top-Front: 9 -->
+    <polygon class="sticker" points="147,122 181,104 181,144 147,162" fill="#B71234"/>
+    <!-- Sticker Right-Top-Back: 4 -->
+    <polygon class="sticker" points="183,103 217,85 217,125 183,143" fill="#B71234"/>
+    <!-- Sticker Right-Bottom-Front: 11 -->
+    <polygon class="sticker" points="147,164 181,146 181,186 147,204" fill="#B71234"/>
+    <!-- Sticker Right-Bottom-Back: 6 -->
+    <polygon class="sticker" points="183,145 217,127 217,167 183,185" fill="#B71234"/>
+
+    <!-- Subtle gloss highlights on top face -->
+    <polygon points="145,49 174,65 145,80 116,65" fill="#FFFFFF" opacity="0.3"/>
+    <polygon points="145,87 174,103 145,118 116,103" fill="#FFFFFF" opacity="0.3"/>
+  </g>
+
+  <!-- Brand Typography & Content -->
+  <g transform="translate(285, 0)">
+    <!-- Category pill badge -->
+    <g transform="translate(0, 48)">
+      <rect width="186" height="24" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <!-- 6 Palette Dots -->
+      <circle cx="14" cy="12" r="4" fill="#FFFFFF"/>
+      <circle cx="26" cy="12" r="4" fill="#FFD500"/>
+      <circle cx="38" cy="12" r="4" fill="#B71234"/>
+      <circle cx="50" cy="12" r="4" fill="#FF5800"/>
+      <circle cx="62" cy="12" r="4" fill="#009B48"/>
+      <circle cx="74" cy="12" r="4" fill="#0046AD"/>
+      <text x="88" y="15.5" font-family="system-ui, -apple-system, sans-serif" font-size="10.5" font-weight="700" fill="#94a3b8" letter-spacing="0.08em">2×2 HEURISTIC LAB</text>
+    </g>
+
+    <!-- Main Title -->
+    <text x="0" y="118" font-family="system-ui, -apple-system, sans-serif" font-size="46" font-weight="900" fill="url(#textGrad)" letter-spacing="-0.03em">
+      PocketCube
+    </text>
+
+    <!-- Subtitle with Color Gradient Accent -->
+    <text x="0" y="152" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="url(#accentGrad)" letter-spacing="0.02em">
+      State Space Search Lab &amp; Physical Cube Solver
+    </text>
+
+    <!-- Description -->
+    <text x="0" y="184" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="400" fill="#94a3b8" line-height="1.5">
+      Interactive 3D WebGL laboratory for informed heuristic search (A*, IDA*, Greedy, BFS),
+    </text>
+    <text x="0" y="204" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="400" fill="#94a3b8">
+      dual 3D/2D physical cube painter, camera assist, and step-by-step 3D solution cards.
+    </text>
+
+    <!-- Mini Feature Badges Row -->
+    <g transform="translate(0, 222)">
+      <!-- Badge 1 -->
+      <g>
+        <rect width="90" height="20" rx="4" fill="#111827" stroke="#374151" stroke-width="1"/>
+        <text x="45" y="13.5" font-family="'JetBrains Mono', Consolas, monospace" font-size="10" font-weight="600" fill="#38bdf8" text-anchor="middle">Next.js 16</text>
+      </g>
+      <!-- Badge 2 -->
+      <g transform="translate(98, 0)">
+        <rect width="84" height="20" rx="4" fill="#111827" stroke="#374151" stroke-width="1"/>
+        <text x="42" y="13.5" font-family="'JetBrains Mono', Consolas, monospace" font-size="10" font-weight="600" fill="#61dafb" text-anchor="middle">React 19</text>
+      </g>
+      <!-- Badge 3 -->
+      <g transform="translate(190, 0)">
+        <rect width="88" height="20" rx="4" fill="#111827" stroke="#374151" stroke-width="1"/>
+        <text x="44" y="13.5" font-family="'JetBrains Mono', Consolas, monospace" font-size="10" font-weight="600" fill="#a78bfa" text-anchor="middle">Three.js</text>
+      </g>
+      <!-- Badge 4 -->
+      <g transform="translate(286, 0)">
+        <rect width="112" height="20" rx="4" fill="#111827" stroke="#374151" stroke-width="1"/>
+        <text x="56" y="13.5" font-family="'JetBrains Mono', Consolas, monospace" font-size="10" font-weight="600" fill="#4ade80" text-anchor="middle">A* / IDA* / BFS</text>
+      </g>
+      <!-- Badge 5 -->
+      <g transform="translate(406, 0)">
+        <rect width="130" height="20" rx="4" fill="#111827" stroke="#374151" stroke-width="1"/>
+        <text x="65" y="13.5" font-family="'JetBrains Mono', Consolas, monospace" font-size="10" font-weight="600" fill="#fb923c" text-anchor="middle">Solve My Cube</text>
+      </g>
+    </g>
+  </g>
+</svg>
