@@ -1,7 +1,15 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { createCubies, applyStateToCubies, extractState, disposeCubies } from './CubieMesh.js';
+import {
+  createCubies,
+  applyStateToCubies,
+  extractState,
+  disposeCubies,
+  cornerIndexFromPosition,
+  faceFromNormal,
+  slotIndexFor,
+} from './CubieMesh.js';
 import { MoveAnimator } from './MoveAnimator.js';
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -324,6 +332,36 @@ export class CubeScene {
 
   resetCamera() {
     return this.setCameraView('iso');
+  }
+
+  pickStickerSlot(clientX, clientY) {
+    if (!this.renderer || !this.camera || !this.cubies) return -1;
+    const dom = this.renderer.domElement;
+    if (!dom) return -1;
+    const rect = dom.getBoundingClientRect();
+    const x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    const y = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera({ x, y }, this.camera);
+    const hits = raycaster.intersectObjects(this.cubies, true);
+
+    const tmpPos = new THREE.Vector3();
+    const tmpNorm = new THREE.Vector3();
+
+    for (const hit of hits) {
+      const obj = hit.object;
+      if (obj && obj.userData && obj.userData.normal && obj.parent) {
+        const cubie = obj.parent;
+        cubie.getWorldPosition(tmpPos);
+        const cornerIndex = cornerIndexFromPosition(tmpPos);
+        tmpNorm.copy(obj.userData.normal).applyQuaternion(cubie.quaternion);
+        const face = faceFromNormal(tmpNorm);
+        const slot = slotIndexFor(cornerIndex, face);
+        if (slot !== undefined && slot >= 0) return slot;
+      }
+    }
+    return -1;
   }
 
   resize() {

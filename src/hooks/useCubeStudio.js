@@ -446,6 +446,7 @@ export function useCubeStudio() {
     // refs to attach
     containerRef,
     canvasRef,
+    sceneRef,
     // state
     settings,
     status,

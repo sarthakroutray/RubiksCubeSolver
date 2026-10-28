@@ -10,7 +10,8 @@
     "test:cube": "node test-cube.js",
     "test:solver": "node test-solver.js",
     "test:three": "node test-three.js",
-    "test": "npm run test:cube && npm run test:solver && npm run test:three"
+    "test:smc": "node test-solve-my-cube.js",
+    "test": "npm run test:cube && npm run test:solver && npm run test:three && npm run test:smc"
   },
   "dependencies": {
     "next": "^16.4.2",
