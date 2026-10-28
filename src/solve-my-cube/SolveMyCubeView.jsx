@@ -7,12 +7,14 @@ import CameraAssistModal from './input/CameraAssistModal.jsx';
 import StepCardGrid from './viewer/StepCardGrid.jsx';
 import PlaybackControls from './viewer/PlaybackControls.jsx';
 import CelebrationModal from './viewer/CelebrationModal.jsx';
+import SearchTreePanel from '../components/SearchTreePanel.jsx';
 
 export default function SolveMyCubeView({ smc, algorithms, algorithmLabels, heuristics }) {
   const [customMoveInput, setCustomMoveInput] = useState('');
   const [customMoveOpen, setCustomMoveOpen] = useState(false);
   const [selectedAlg, setSelectedAlg] = useState('astar');
   const [selectedH, setSelectedH] = useState('h2');
+  const [activeTab, setActiveTab] = useState('steps');
 
   const {
     stickers,
@@ -201,16 +203,41 @@ export default function SolveMyCubeView({ smc, algorithms, algorithmLabels, heur
               </span>
             )}
           </div>
+          <div className="segmented mode-segmented" role="tablist" aria-label="Solution View">
+            <button
+              type="button"
+              className={`seg-btn ${activeTab === 'steps' ? 'active' : ''}`}
+              onClick={() => setActiveTab('steps')}
+              role="tab"
+              aria-selected={activeTab === 'steps'}
+            >
+              Step Cards {solutionMoves.length > 0 ? `(${solutionMoves.length})` : ''}
+            </button>
+            <button
+              type="button"
+              className={`seg-btn ${activeTab === 'tree' ? 'active' : ''}`}
+              onClick={() => setActiveTab('tree')}
+              role="tab"
+              aria-selected={activeTab === 'tree'}
+            >
+              Expansion Tree
+            </button>
+          </div>
         </div>
 
-        {/* Graphical Step Cards Grid */}
-        <StepCardGrid
-          steps={solutionSteps}
-          activeStepIndex={activeStepIndex}
-          onSelectStep={selectStep}
-          beginnerMode={beginnerMode}
-          beginnerPhases={beginnerPhases}
-        />
+        {activeTab === 'steps' ? (
+          <StepCardGrid
+            steps={solutionSteps}
+            activeStepIndex={activeStepIndex}
+            onSelectStep={selectStep}
+            beginnerMode={beginnerMode}
+            beginnerPhases={beginnerPhases}
+          />
+        ) : (
+          <div className="smc-tree-wrapper">
+            <SearchTreePanel canvasRef={smc.treeCanvasRef} />
+          </div>
+        )}
 
         {/* Playback & Scrubbing Controls */}
         <PlaybackControls

@@ -6,6 +6,7 @@ import { validateCube } from './validation/validateCube.js';
 import { SolveSession } from './solver-adapter/solveAdapter.js';
 import { annotateBeginnerPhases } from './solver-adapter/beginnerMethod.js';
 import { applyMove, applyMoves, solvedState, scramble } from '../core/CubeState.js';
+import { SearchTreeCanvas } from '../visualizer/SearchTreeCanvas.js';
 
 export function useSolveMyCube({ cubeSceneRef, setCameraView }) {
   // 24 stickers (initialized to UNSET_ID)
@@ -43,6 +44,52 @@ export function useSolveMyCube({ cubeSceneRef, setCameraView }) {
   const [copied, setCopied] = useState(false);
   const [solveStats, setSolveStats] = useState({ nodes: 0, elapsedMs: 0, algorithm: 'A*' });
 
+  const treeRef = useRef(null);
+  const cleanupTreeRef = useRef(null);
+
+  const treeCanvasRef = useCallback((canvas) => {
+    if (cleanupTreeRef.current) {
+      cleanupTreeRef.current();
+      cleanupTreeRef.current = null;
+    }
+    if (!canvas) {
+      treeRef.current = null;
+      return;
+    }
+    const tree = new SearchTreeCanvas(canvas, {
+      onNodeClick: (node) => {
+        if (node?.state && cubeSceneRef.current) {
+          cubeSceneRef.current.syncToStateArray(node.state);
+        }
+      },
+    });
+    treeRef.current = tree;
+
+    const observer = new ResizeObserver(() => {
+      if (treeRef.current === tree) tree.resize();
+    });
+    observer.observe(canvas);
+    const onResize = () => {
+      if (treeRef.current === tree) tree.resize();
+    };
+    window.addEventListener('resize', onResize);
+
+    cleanupTreeRef.current = () => {
+      observer.disconnect();
+      window.removeEventListener('resize', onResize);
+      if (typeof tree.dispose === 'function') tree.dispose();
+      if (treeRef.current === tree) treeRef.current = null;
+    };
+  }, [cubeSceneRef]);
+
+  useEffect(() => {
+    return () => {
+      if (cleanupTreeRef.current) {
+        cleanupTreeRef.current();
+        cleanupTreeRef.current = null;
+      }
+    };
+  }, []);
   const sessionRef = useRef(null);
   const playTimerRef = useRef(null);
   const stickersRef = useRef(stickers);
@@ -160,6 +207,7 @@ export function useSolveMyCube({ cubeSceneRef, setCameraView }) {
 
       setIsSolving(true);
       setIsPlaying(false);
+      treeRef.current?.reset();
       sessionRef.current?.abort();
       const session = new SolveSession();
       sessionRef.current = session;
@@ -171,9 +219,10 @@ export function useSolveMyCube({ cubeSceneRef, setCameraView }) {
             algorithm: options.algorithm || 'astar',
             heuristic: options.heuristic || 'h2',
             maxNodes: 1_500_000,
-            yieldEvery: 20,
+            yieldEvery: 1,
           },
           (frame) => {
+            treeRef.current?.addFrame(frame);
             setSolveProgress({
               expanded: frame.closedSetCount,
               frontier: frame.openSetCount,
@@ -185,6 +234,7 @@ export function useSolveMyCube({ cubeSceneRef, setCameraView }) {
         );
 
         if (result && result.solution) {
+          treeRef.current?.markSolution();
           const moves = result.solution;
           let curr = [...val.normalizedState];
           const steps = [];
@@ -360,5 +410,6 @@ export function useSolveMyCube({ cubeSceneRef, setCameraView }) {
     copied,
     copyNotation,
     solveStats,
+    treeCanvasRef,
   };
 }

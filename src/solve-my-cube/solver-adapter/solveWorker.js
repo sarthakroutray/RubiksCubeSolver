@@ -13,7 +13,7 @@ self.onmessage = function (e) {
 
   if (data.type === 'START') {
     isCancelled = false;
-    const { startState, algorithm = 'astar', heuristic = 'h2', maxNodes = 1_500_000, yieldEvery = 25 } = data;
+    const { startState, algorithm = 'astar', heuristic = 'h2', maxNodes = 1_500_000, yieldEvery = 1 } = data;
     const started = performance.now();
 
     try {

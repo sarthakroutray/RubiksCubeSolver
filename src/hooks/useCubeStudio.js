@@ -73,7 +73,6 @@ export function useCubeStudio() {
   const [copied, setCopied] = useState(false);
 
   const containerRef = useRef(null);
-  const canvasRef = useRef(null);
   const sceneRef = useRef(null);
   const treeRef = useRef(null);
 
@@ -118,24 +117,46 @@ export function useCubeStudio() {
     };
   }, []);
 
-  /* ── Search-tree mount ───────────────────────────────────── */
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return undefined;
+    /* ── Search-tree mount & dynamic ref ─────────────────────── */
+  const cleanupTreeRef = useRef(null);
+
+  const canvasRef = useCallback((canvas) => {
+    if (cleanupTreeRef.current) {
+      cleanupTreeRef.current();
+      cleanupTreeRef.current = null;
+    }
+    if (!canvas) {
+      treeRef.current = null;
+      return;
+    }
     const tree = new SearchTreeCanvas(canvas, {
-      onNodeClick: (node) => inspectRef.current(node),
+      onNodeClick: (node) => inspectRef.current?.(node),
     });
     treeRef.current = tree;
 
-    const observer = new ResizeObserver(() => tree.resize());
+    const observer = new ResizeObserver(() => {
+      if (treeRef.current === tree) tree.resize();
+    });
     observer.observe(canvas);
-    const onResize = () => tree.resize();
+    const onResize = () => {
+      if (treeRef.current === tree) tree.resize();
+    };
     window.addEventListener('resize', onResize);
-    return () => {
+
+    cleanupTreeRef.current = () => {
       observer.disconnect();
       window.removeEventListener('resize', onResize);
       if (typeof tree.dispose === 'function') tree.dispose();
       if (treeRef.current === tree) treeRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (cleanupTreeRef.current) {
+        cleanupTreeRef.current();
+        cleanupTreeRef.current = null;
+      }
     };
   }, []);
 
@@ -240,7 +261,7 @@ export function useCubeStudio() {
       algorithm: config.algorithm,
       heuristic: config.heuristic,
       maxNodes: UI_MAX_NODES,
-      yieldEvery: live ? 1 : 20,
+      yieldEvery: 1,
     });
 
     let frameCount = 0;
@@ -261,6 +282,7 @@ export function useCubeStudio() {
           return;
         }
         value.elapsedMs = elapsed;
+        treeRef.current?.markSolution();
         await playSolution(value, token);
         return;
       }
@@ -280,7 +302,7 @@ export function useCubeStudio() {
         await sleep(110 / settingsRef.current.speed);
       } else {
         frameCount += 1;
-        if (frameCount % 250 === 0) await sleep(0);
+        if (frameCount % 25 === 0) await sleep(0);
       }
     }
   }, [playSolution, pushStatus]);

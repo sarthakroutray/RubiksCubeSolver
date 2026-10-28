@@ -12,7 +12,7 @@ export class SolveSession {
       algorithm = 'astar',
       heuristic = 'h2',
       maxNodes = 1_500_000,
-      yieldEvery = 20,
+      yieldEvery = 1,
     } = options;
 
     // Check if Web Worker is supported in current environment
@@ -77,9 +77,10 @@ export class SolveSession {
       algorithm = 'astar',
       heuristic = 'h2',
       maxNodes = 1_500_000,
-      yieldEvery = 25,
+      yieldEvery = 1,
     } = options;
 
+    let frameCount = 0;
     const started = performance.now();
     const iterator = search(startState, {
       algorithm,
@@ -103,8 +104,8 @@ export class SolveSession {
         onFrame(value);
       }
 
-      // Small tick yield so UI can update
-      await new Promise((r) => setTimeout(r, 0));
+      frameCount++;
+      if (frameCount % 25 === 0) await new Promise((r) => setTimeout(r, 0));
     }
   }
 
