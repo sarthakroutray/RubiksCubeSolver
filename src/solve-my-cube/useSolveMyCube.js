@@ -8,7 +8,7 @@ import { annotateBeginnerPhases } from './solver-adapter/beginnerMethod.js';
 import { applyMove, applyMoves, solvedState, scramble } from '../core/CubeState.js';
 import { SearchTreeCanvas } from '../visualizer/SearchTreeCanvas.js';
 
-export function useSolveMyCube({ cubeSceneRef, setCameraView }) {
+export function useSolveMyCube({ cubeSceneRef, setCameraView, enabled = false }) {
   // 24 stickers (initialized to UNSET_ID)
   const [stickers, setStickers] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -105,14 +105,13 @@ export function useSolveMyCube({ cubeSceneRef, setCameraView }) {
     } catch {}
   }, [stickers]);
 
-  // Sync painted stickers with 3D cube model when not in solution playback
+  // Sync painted stickers with 3D cube model when in solve mode and not in solution playback
   useEffect(() => {
+    if (!enabled) return;
     if (activeStepIndex === -1 && cubeSceneRef.current) {
-      cubeSceneRef.current.syncToStateArray(
-        stickers.map((c) => (c >= 0 && c <= 5 ? c : 0))
-      );
+      cubeSceneRef.current.syncToStateArray(stickers);
     }
-  }, [stickers, activeStepIndex, cubeSceneRef]);
+  }, [enabled, stickers, activeStepIndex, cubeSceneRef]);
 
   /* ── History & Painting ────────────────────────────────────────────── */
   const pushState = useCallback((newStickers) => {
@@ -275,9 +274,11 @@ export function useSolveMyCube({ cubeSceneRef, setCameraView }) {
       if (index < -1 || index >= solutionSteps.length) return;
       setActiveStepIndex(index);
       if (index === -1) {
-        // Show initial normalized scramble
+        // Show initial normalized scramble or painted stickers
         if (validation.normalizedState && cubeSceneRef.current) {
           cubeSceneRef.current.syncToStateArray(validation.normalizedState);
+        } else if (cubeSceneRef.current) {
+          cubeSceneRef.current.syncToStateArray(stickers);
         }
       } else {
         const step = solutionSteps[index];

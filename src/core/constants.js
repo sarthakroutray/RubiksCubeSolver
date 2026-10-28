@@ -3,6 +3,7 @@ export const FACE_NAMES = ['U', 'R', 'F', 'D', 'L', 'B'];
 export const FACE_ID = { U: 0, R: 1, F: 2, D: 3, L: 4, B: 5 };
 
 export const COLORS = {
+  [-1]: '#2b2d35',
   0: '#f8fafc',
   1: '#ef4444',
   2: '#22c55e',

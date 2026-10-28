@@ -246,7 +246,8 @@ export function applyStateToCubies(cubies, state) {
   forEachSticker(cubies, (sticker, slot) => {
     const colorId = state[slot];
     sticker.userData.colorId = colorId;
-    sticker.material.color.set(COLORS[colorId]);
+    const colorHex = COLORS[colorId] ?? '#2b2d35';
+    sticker.material.color.set(colorHex);
   });
 }
 

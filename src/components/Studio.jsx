@@ -48,12 +48,14 @@ export default function Studio() {
     previewStep,
     setView,
     resetCamera,
+    syncScene,
     copyTape,
   } = studio;
 
   const smc = useSolveMyCube({
     cubeSceneRef: sceneRef,
     setCameraView: setView,
+    enabled: mode === 'solve',
   });
 
   // Handle 3D canvas sticker click painting in Solve My Cube mode
@@ -72,16 +74,19 @@ export default function Studio() {
   useEffect(() => {
     if (mode === 'explore') {
       // Re-sync Explore model state to 3D cube
+      syncScene();
       resetCamera();
     } else if (mode === 'solve') {
       // Sync Solve My Cube stickers to 3D cube
       if (sceneRef.current) {
-        sceneRef.current.syncToStateArray(
-          smc.stickers.map((c) => (c >= 0 && c <= 5 ? c : 0))
-        );
+        if (smc.activeStepIndex >= 0 && smc.solutionSteps[smc.activeStepIndex]) {
+          sceneRef.current.syncToStateArray(smc.solutionSteps[smc.activeStepIndex].stateAfter);
+        } else {
+          sceneRef.current.syncToStateArray(smc.stickers);
+        }
       }
     }
-  }, [mode, resetCamera, sceneRef, smc.stickers]);
+  }, [mode, syncScene, resetCamera, sceneRef, smc.activeStepIndex, smc.solutionSteps, smc.stickers]);
 
   /* ── Global keyboard shortcuts ───────────────────────────── */
   useEffect(() => {

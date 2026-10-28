@@ -110,6 +110,7 @@ export function useCubeStudio() {
     if (!container) return undefined;
     const scene = new CubeScene(container);
     scene.setCameraView('iso');
+    scene.syncToStateArray(modelRef.current);
     sceneRef.current = scene;
     return () => {
       scene.dispose();
@@ -448,6 +449,10 @@ export function useCubeStudio() {
     sceneRef.current?.resetCamera();
   }, []);
 
+  const syncScene = useCallback(() => {
+    sceneRef.current?.syncToStateArray(modelRef.current);
+  }, []);
+
   const copyTape = useCallback(async () => {
     if (recordedMovesRef.current.length === 0) return;
     const text = recordedMovesRef.current.join(' ');
@@ -496,6 +501,7 @@ export function useCubeStudio() {
     previewStep,
     setView,
     resetCamera,
+    syncScene,
     copyTape,
   };
 }
