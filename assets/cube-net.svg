@@ -1,0 +1,231 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 400" width="100%" height="400">
+  <defs>
+    <filter id="netShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+    <linearGradient id="netBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b0f17"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    .face-title {
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      fill: #94a3b8;
+      text-anchor: middle;
+      letter-spacing: 0.05em;
+    }
+    .sticker-rect {
+      stroke: #111827;
+      stroke-width: 2.5;
+      rx: 5px;
+      ry: 5px;
+    }
+    .sticker-txt {
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 15px;
+      font-weight: 800;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+    .anchor-badge {
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 8.5px;
+      font-weight: 800;
+      fill: #ffffff;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+  </style>
+
+  <!-- Background Container Card -->
+  <rect width="740" height="400" rx="14" fill="url(#netBg)" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Card Header -->
+  <g transform="translate(30, 28)">
+    <text x="0" y="0" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#f3f4f6" letter-spacing="0.04em">
+      24-STICKER CANONICAL UNFOLDED NET
+    </text>
+    <text x="0" y="18" font-family="system-ui, -apple-system, sans-serif" font-size="11.5" font-weight="400" fill="#94a3b8">
+      Flat cross layout mapping 24 slots across 6 faces • Anchor DBL corner highlighted (Slots 14, 18, 23)
+    </text>
+  </g>
+
+  <!-- Net Layout Group -->
+  <!-- Coordinates:
+       Middle row: 4 faces across: L, F, R, B
+       Each face has width 100 (two 46px stickers + 4px gap + padding), height 100
+       Spacing: X starts at 150.
+       Face L: x = 50
+       Face F: x = 180
+       Face R: x = 310
+       Face B: x = 440
+       Top row: U at x = 180 (aligned with F), y = 60
+       Middle row: L, F, R, B at y = 165
+       Bottom row: D at x = 180 (aligned with F), y = 270
+  -->
+  <g transform="translate(45, 6)" filter="url(#netShadow)">
+
+    <!-- ── 1. FACE U (Up, White #FFFFFF) ── -->
+    <g transform="translate(160, 60)">
+      <text x="50" y="-8" class="face-title">U · UP (WHITE)</text>
+      <!-- Slot 0: Top-Left -->
+      <rect x="0" y="0" width="46" height="46" fill="#FFFFFF" class="sticker-rect"/>
+      <text x="23" y="23" fill="#111827" class="sticker-txt">0</text>
+      <!-- Slot 1: Top-Right -->
+      <rect x="52" y="0" width="46" height="46" fill="#FFFFFF" class="sticker-rect"/>
+      <text x="75" y="23" fill="#111827" class="sticker-txt">1</text>
+      <!-- Slot 2: Bottom-Left -->
+      <rect x="0" y="52" width="46" height="46" fill="#FFFFFF" class="sticker-rect"/>
+      <text x="23" y="75" fill="#111827" class="sticker-txt">2</text>
+      <!-- Slot 3: Bottom-Right -->
+      <rect x="52" y="52" width="46" height="46" fill="#FFFFFF" class="sticker-rect"/>
+      <text x="75" y="75" fill="#111827" class="sticker-txt">3</text>
+    </g>
+
+    <!-- ── 2. FACE L (Left, Orange #FF5800) ── -->
+    <g transform="translate(30, 168)">
+      <text x="50" y="-8" class="face-title">L · LEFT (ORANGE)</text>
+      <!-- Slot 16: Top-Left -->
+      <rect x="0" y="0" width="46" height="46" fill="#FF5800" class="sticker-rect"/>
+      <text x="23" y="23" fill="#FFFFFF" class="sticker-txt">16</text>
+      <!-- Slot 17: Top-Right -->
+      <rect x="52" y="0" width="46" height="46" fill="#FF5800" class="sticker-rect"/>
+      <text x="75" y="23" fill="#FFFFFF" class="sticker-txt">17</text>
+      <!-- Slot 18: Bottom-Left (DBL Anchor!) -->
+      <rect x="0" y="52" width="46" height="46" fill="#FF5800" class="sticker-rect" stroke="#eab308" stroke-width="3"/>
+      <text x="23" y="72" fill="#FFFFFF" class="sticker-txt">18</text>
+      <rect x="2" y="86" width="42" height="11" rx="3" fill="#000000" opacity="0.75"/>
+      <text x="23" y="92" class="anchor-badge">★ DBL</text>
+      <!-- Slot 19: Bottom-Right -->
+      <rect x="52" y="52" width="46" height="46" fill="#FF5800" class="sticker-rect"/>
+      <text x="75" y="75" fill="#FFFFFF" class="sticker-txt">19</text>
+    </g>
+
+    <!-- ── 3. FACE F (Front, Green #009B48) ── -->
+    <g transform="translate(160, 168)">
+      <text x="50" y="-8" class="face-title">F · FRONT (GREEN)</text>
+      <!-- Slot 8: Top-Left -->
+      <rect x="0" y="0" width="46" height="46" fill="#009B48" class="sticker-rect"/>
+      <text x="23" y="23" fill="#FFFFFF" class="sticker-txt">8</text>
+      <!-- Slot 9: Top-Right -->
+      <rect x="52" y="0" width="46" height="46" fill="#009B48" class="sticker-rect"/>
+      <text x="75" y="23" fill="#FFFFFF" class="sticker-txt">9</text>
+      <!-- Slot 10: Bottom-Left -->
+      <rect x="0" y="52" width="46" height="46" fill="#009B48" class="sticker-rect"/>
+      <text x="23" y="75" fill="#FFFFFF" class="sticker-txt">10</text>
+      <!-- Slot 11: Bottom-Right -->
+      <rect x="52" y="52" width="46" height="46" fill="#009B48" class="sticker-rect"/>
+      <text x="75" y="75" fill="#FFFFFF" class="sticker-txt">11</text>
+    </g>
+
+    <!-- ── 4. FACE R (Right, Red #B71234) ── -->
+    <g transform="translate(290, 168)">
+      <text x="50" y="-8" class="face-title">R · RIGHT (RED)</text>
+      <!-- Slot 4: Top-Left -->
+      <rect x="0" y="0" width="46" height="46" fill="#B71234" class="sticker-rect"/>
+      <text x="23" y="23" fill="#FFFFFF" class="sticker-txt">4</text>
+      <!-- Slot 5: Top-Right -->
+      <rect x="52" y="0" width="46" height="46" fill="#B71234" class="sticker-rect"/>
+      <text x="75" y="23" fill="#FFFFFF" class="sticker-txt">5</text>
+      <!-- Slot 6: Bottom-Left -->
+      <rect x="0" y="52" width="46" height="46" fill="#B71234" class="sticker-rect"/>
+      <text x="23" y="75" fill="#FFFFFF" class="sticker-txt">6</text>
+      <!-- Slot 7: Bottom-Right -->
+      <rect x="52" y="52" width="46" height="46" fill="#B71234" class="sticker-rect"/>
+      <text x="75" y="75" fill="#FFFFFF" class="sticker-txt">7</text>
+    </g>
+
+    <!-- ── 5. FACE B (Back, Blue #0046AD) ── -->
+    <g transform="translate(420, 168)">
+      <text x="50" y="-8" class="face-title">B · BACK (BLUE)</text>
+      <!-- Slot 20: Top-Left -->
+      <rect x="0" y="0" width="46" height="46" fill="#0046AD" class="sticker-rect"/>
+      <text x="23" y="23" fill="#FFFFFF" class="sticker-txt">20</text>
+      <!-- Slot 21: Top-Right -->
+      <rect x="52" y="0" width="46" height="46" fill="#0046AD" class="sticker-rect"/>
+      <text x="75" y="23" fill="#FFFFFF" class="sticker-txt">21</text>
+      <!-- Slot 22: Bottom-Left -->
+      <rect x="0" y="52" width="46" height="46" fill="#0046AD" class="sticker-rect"/>
+      <text x="23" y="75" fill="#FFFFFF" class="sticker-txt">22</text>
+      <!-- Slot 23: Bottom-Right (DBL Anchor!) -->
+      <rect x="52" y="52" width="46" height="46" fill="#0046AD" class="sticker-rect" stroke="#eab308" stroke-width="3"/>
+      <text x="75" y="72" fill="#FFFFFF" class="sticker-txt">23</text>
+      <rect x="54" y="86" width="42" height="11" rx="3" fill="#000000" opacity="0.75"/>
+      <text x="75" y="92" class="anchor-badge">★ DBL</text>
+    </g>
+
+    <!-- ── 6. FACE D (Down, Yellow #FFD500) ── -->
+    <g transform="translate(160, 276)">
+      <text x="50" y="-8" class="face-title">D · DOWN (YELLOW)</text>
+      <!-- Slot 12: Top-Left -->
+      <rect x="0" y="0" width="46" height="46" fill="#FFD500" class="sticker-rect"/>
+      <text x="23" y="23" fill="#111827" class="sticker-txt">12</text>
+      <!-- Slot 13: Top-Right -->
+      <rect x="52" y="0" width="46" height="46" fill="#FFD500" class="sticker-rect"/>
+      <text x="75" y="23" fill="#111827" class="sticker-txt">13</text>
+      <!-- Slot 14: Bottom-Left (DBL Anchor!) -->
+      <rect x="0" y="52" width="46" height="46" fill="#FFD500" class="sticker-rect" stroke="#eab308" stroke-width="3"/>
+      <text x="23" y="72" fill="#111827" class="sticker-txt">14</text>
+      <rect x="2" y="86" width="42" height="11" rx="3" fill="#000000" opacity="0.75"/>
+      <text x="23" y="92" class="anchor-badge">★ DBL</text>
+      <!-- Slot 15: Bottom-Right -->
+      <rect x="52" y="52" width="46" height="46" fill="#FFD500" class="sticker-rect"/>
+      <text x="75" y="75" fill="#111827" class="sticker-txt">15</text>
+    </g>
+
+    <!-- Legend Panel on Right Side -->
+    <g transform="translate(540, 60)">
+      <rect width="135" height="314" rx="8" fill="#0a0d14" stroke="#1e293b" stroke-width="1"/>
+      <text x="67" y="24" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#cbd5e1" text-anchor="middle">
+        ANCHOR LEGEND
+      </text>
+
+      <!-- Yellow border highlight -->
+      <rect x="14" y="42" width="20" height="20" rx="3" fill="#FFD500" stroke="#eab308" stroke-width="2.5"/>
+      <text x="42" y="56" font-family="system-ui, -apple-system, sans-serif" font-size="10.5" font-weight="600" fill="#f8fafc">
+        Slot 14 (D)
+      </text>
+
+      <rect x="14" y="72" width="20" height="20" rx="3" fill="#FF5800" stroke="#eab308" stroke-width="2.5"/>
+      <text x="42" y="86" font-family="system-ui, -apple-system, sans-serif" font-size="10.5" font-weight="600" fill="#f8fafc">
+        Slot 18 (L)
+      </text>
+
+      <rect x="14" y="102" width="20" height="20" rx="3" fill="#0046AD" stroke="#eab308" stroke-width="2.5"/>
+      <text x="42" y="116" font-family="system-ui, -apple-system, sans-serif" font-size="10.5" font-weight="600" fill="#f8fafc">
+        Slot 23 (B)
+      </text>
+
+      <line x1="14" y1="135" x2="121" y2="135" stroke="#1e293b" stroke-width="1"/>
+
+      <text x="14" y="154" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700" fill="#eab308">
+        ★ FIXED ANCHOR
+      </text>
+      <text x="14" y="172" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#94a3b8" width="110">
+        Down-Back-Left
+      </text>
+      <text x="14" y="188" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#94a3b8">
+        (DBL) is anchored.
+      </text>
+      <text x="14" y="210" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#94a3b8">
+        Only U, R, F face
+      </text>
+      <text x="14" y="226" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#94a3b8">
+        turns are applied,
+      </text>
+      <text x="14" y="242" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#94a3b8">
+        eliminating all 24
+      </text>
+      <text x="14" y="258" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#94a3b8">
+        whole-cube spatial
+      </text>
+      <text x="14" y="274" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#94a3b8">
+        symmetries.
+      </text>
+    </g>
+  </g>
+</svg>
